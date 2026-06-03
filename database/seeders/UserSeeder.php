@@ -7,6 +7,8 @@ use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
+//dsadasdasdsa
+
 class UserSeeder extends Seeder
 {
     public function run(): void
