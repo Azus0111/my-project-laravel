@@ -1,0 +1,52 @@
+version: '3.8'
+
+services:
+  # 1. Container chạy Laravel App (Sử dụng cái Dockerfile ở trên)
+  app:
+    build:
+      context: .
+      dockerfile: dockerFile
+    image: my-laravel-app
+    container_name: laravel-app
+    restart: unless-stopped
+    volumes:
+      - .:/var/www
+    networks:
+      - laravel-network
+
+  # 2. Container chạy Nginx làm Web Server
+  web:
+    image: nginx:alpine
+    container_name: laravel-nginx
+    restart: unless-stopped
+    ports:
+      - "8000:80" # Anh truy cập qua port 8000 của máy ảo nhé
+    volumes:
+      - .:/var/www
+      - ./docker-compose/nginx:/etc/nginx/conf.d/ # Cấu hình Nginx kết nối sang app:9000
+    networks:
+      - laravel-network
+    depends_on:
+      - app
+
+  # 3. Container chạy MySQL Database
+  db:
+    image: mysql:8.0
+    container_name: laravel-db
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: laravel_db
+      MYSQL_ROOT_PASSWORD: root_password
+    ports:
+      - "3306:3306"
+    volumes: 
+      - mysql_data:/var/lib/mysql
+    networks:
+      - laravel-network
+
+networks:
+  laravel-network:
+    driver: bridge
+
+volumes:
+  mysql_data:
